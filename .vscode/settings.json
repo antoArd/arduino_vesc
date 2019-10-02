@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "vesc_crc.h": "c",
+        "hardwareserial.h": "c",
+        "arduino.h": "c"
+    }
+}
