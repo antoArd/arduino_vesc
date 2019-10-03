@@ -19,6 +19,8 @@
 #define Vesc_h
 
 #include <Arduino.h>
+#include "vesc_types.h"
+#include "vesc_packet.h"
 
 class Vesc {
 
@@ -30,33 +32,31 @@ class Vesc {
         void setBrakeCurrent(float current);
         void setRPM(int32_t rpm);
         void setPosition(float position);
-        void setHandbrake(float current)
-        Version getFirmwareVersion();
-        Values getRealtimeValues();
-        MotorConfiguration getMotorConfiguration();
-        float16_t getFetTemperature();
-        float16_t getMotorTemperature();
-        float32_t getAvgMotorCurrent();
-        float32_t getAvgInputCurrent();
-        float32_t getResetAvgId();
-        float32_t getResetAvgIq();
-        float16_t getDutyCycleNow();
-        float32_t getRPM();
-        float16_t getInputVoltage();
-        float32_t getAmpHours();
-        float32_t getaAmpHoursCharged();
-        float32_t getWattHours();
-        float32_t getWattHoursCharged();
+        void setHandbrake(float current);
+        vesc_version getFirmwareVersion();
+        vesc_values getRealtimeValues();
+        mc_configuration getMotorConfiguration();
+        float getFetTemperature();
+        float getMotorTemperature();
+        float getAvgMotorCurrent();
+        float getAvgInputCurrent();
+        float getResetAvgId();
+        float getResetAvgIq();
+        float getDutyCycleNow();
+        float getRPM();
+        float getInputVoltage();
+        float getAmpHours();
+        float getaAmpHoursCharged();
+        float getWattHours();
+        float getWattHoursCharged();
         int32_t getTachometerValue();
         int32_t getTachometerAbsValue();
-        unit8_t getFault();
-        float32_t getPidPosNow();
-        unit8_t getControllerId();
-        float16_t getMosfet1Temperature();
-        float16_t getMosfet2Temperature();
-        float16_t getMosfet3Temperature();
-        float32_t getResetAvgVd();
-        float32_t getResetAvgVq(); 
+        uint8_t getFault();
+        float getPidPosNow();
+        uint8_t getControllerId();
+        float* getMosfetsTemperature();
+        float getResetAvgVd();
+        float getResetAvgVq(); 
 
     private:
 		HardwareSerial* uartPort = NULL;

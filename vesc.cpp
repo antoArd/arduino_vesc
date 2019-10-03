@@ -15,10 +15,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#include <Arduino.h>
 #include "vesc.h"
-#include "vesc_packet.h"
-#include "vesc_types.h"
 #include "vesc_utility.h"
 
 Vesc::Vesc(void)
@@ -72,7 +69,7 @@ void Vesc::setPosition(float position)
     uint8_t send_buffer[5];
     int32_t ind = 0;
     send_buffer[ind++] = COMM_SET_POS;
-    VescUtility::utility_append_int32(send_buffer, (int32_t)(current * 1000000), &ind);
+    VescUtility::utility_append_int32(send_buffer, (int32_t)(position * 1000000), &ind);
     sendPacket(send_buffer, ind);
 }
 
@@ -85,8 +82,9 @@ void Vesc::setHandbrake(float current)
     sendPacket(send_buffer, ind);
 }
 
-Version Vesc::getFirmwareVersion()
+vesc_version Vesc::getFirmwareVersion()
 {
+    vesc_version version;
     uint8_t send_buffer[5];
     uint8_t receive_buffer[50];
     int32_t ind = 0;
@@ -95,29 +93,26 @@ Version Vesc::getFirmwareVersion()
     delay(1);
     if (receivePacket(receive_buffer) && receive_buffer[0] == COMM_FW_VERSION)
     {
-        char *index_pointer = strchr(receive_buffer + 3, '\0');
-        int index = index_pointer - receive_buffer + 3;
-        ind = 1;
-
-        Version version;
         version.major = receive_buffer[ind++];
         version.minor = receive_buffer[ind++];
 
+        uint8_t *index_pointer = (uint8_t*)strchr((char*)receive_buffer + ind, '\0');
+        int index = index_pointer - receive_buffer + ind;
         memcpy(version.hw_name, receive_buffer + ind, index);
         ind += index;
 
-        memcpy(version.stm32_uid, ind, 12);
+        memcpy(version.stm32_uid, receive_buffer, 12);
         ind += 12;
 
         version.pairing_done = receive_buffer[ind++];
-        return version;
     }
 
-    return NULL;
+    return version;
 }
 
-Values Vesc::getRealtimeValues()
+vesc_values Vesc::getRealtimeValues()
 {
+    vesc_values values;
     uint8_t send_buffer[1];
     uint8_t receive_buffer[600];
     int32_t ind = 0;
@@ -127,174 +122,185 @@ Values Vesc::getRealtimeValues()
     if (receivePacket(receive_buffer) && receive_buffer[0] == COMM_GET_VALUES)
     {
         ind = 0;
-        Values values;
-        values.fet_temp : VescUtility::utility_get_float16(receive_buffer, 1e1, ind++);
-        values.motor_temp : VescUtility::utility_get_float16(receive_buffer, 1e1, ind++);
-        values.avg_motor_current : VescUtility::utility_get_float32(receive_buffer, 1e2, ind++);
-        values.avg_input_current : VescUtility::utility_get_float32(receive_buffer, 1e2, ind++);
-        values.reset_avg_id : VescUtility::utility_get_float32(receive_buffer, 1e2, ind++);
-        values.reset_avg_iq : VescUtility::utility_get_float32(receive_buffer, 1e2, ind++);
-        values.duty_cycle_now : VescUtility::utility_get_float16(receive_buffer, 1e3, ind++);
-        values.rpm : VescUtility::utility_get_float32(receive_buffer, 1e0, ind++);
-        values.input_voltage : VescUtility::utility_get_float16(receive_buffer, 1e1, ind++);
-        values.amp_hours : VescUtility::utility_get_float32(receive_buffer, 1e4, ind++);
-        values.amp_hours_charged : VescUtility::utility_get_float32(receive_buffer, 1e4, ind++);
-        values.watt_hours : VescUtility::utility_get_float32(receive_buffer, 1e4, ind++);
-        values.watt_hours_charged : VescUtility::utility_get_float32(receive_buffer, 1e4, ind++);
-        values.tachometer_value : VescUtility::utility_get_int32(receive_buffer, ind++);
-        values.tachometer_abs_value : VescUtility::utility_get_int32(receive_buffer, ind++);
-        values.fault : receive_buffer[ind++];
-        values.pid_pos_now : VescUtility::utility_get_float32(receive_buffer, 1e6, ind++);
-        values.controller_id : receive_buffer[ind++];
-        values.mos1_temp : VescUtility::utility_get_float16(receive_buffer, 1e1, ind++);
-        values.mos2_temp : VescUtility::utility_get_float16(receive_buffer, 1e1, ind++);
-        values.mos3_temp : VescUtility::utility_get_float16(receive_buffer, 1e1, ind++);
-        values.reset_avg_vd : VescUtility::utility_get_float32(receive_buffer, 1e3, ind++);
-        values.reset_avg_vq : VescUtility::utility_get_float32(receive_buffer, 1e3, ind++);
-        return values;
+        values.fet_temp = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
+        values.motor_temp = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
+        values.avg_motor_current = VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
+        values.avg_input_current = VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
+        values.reset_avg_id = VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
+        values.reset_avg_iq = VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
+        values.duty_cycle_now = VescUtility::utility_get_float16(receive_buffer, 1e3, &ind);
+        values.rpm = VescUtility::utility_get_float32(receive_buffer, 1e0, &ind);
+        values.input_voltage = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
+        values.amp_hours = VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
+        values.amp_hours_charged = VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
+        values.watt_hours = VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
+        values.watt_hours_charged = VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
+        values.tachometer_value = VescUtility::utility_get_int32(receive_buffer, &ind);
+        values.tachometer_abs_value = VescUtility::utility_get_int32(receive_buffer, &ind);
+        values.fault = receive_buffer[ind++];
+        values.pid_pos_now = VescUtility::utility_get_float32(receive_buffer, 1e6, &ind);
+        values.controller_id = receive_buffer[ind++];
+        values.mos1_temp = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
+        values.mos2_temp = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
+        values.mos3_temp = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
+        values.reset_avg_vd = VescUtility::utility_get_float32(receive_buffer, 1e3, &ind);
+        values.reset_avg_vq = VescUtility::utility_get_float32(receive_buffer, 1e3, &ind);
     }
 
-    return NULL;
+    return values;
 }
 
-float16_t Vesc::getFetTemperature()
+float Vesc::getFetTemperature()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 0))
     {
-        return VescUtility::utility_get_float16(receive_buffer, 1e1, 2);
+        return VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
     }
 
     return 0;
 }
 
-float16_t Vesc::getMotorTemperature()
+float Vesc::getMotorTemperature()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 1))
     {
-        return VescUtility::utility_get_float16(receive_buffer, 1e1, 2);
+        return VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
     }
 
     return 0;
 }
 
-float32_t Vesc::getAvgMotorCurrent()
+float Vesc::getAvgMotorCurrent()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 2))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e2, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
     }
 
     return 0;
 }
 
-float32_t Vesc::getAvgInputCurrent()
+float Vesc::getAvgInputCurrent()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 3))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e2, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
     }
 
     return 0;
 }
 
-float32_t Vesc::getResetAvgId()
+float Vesc::getResetAvgId()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 4))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e2, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
     }
 
     return 0;
 }
 
-float32_t Vesc::getResetAvgIq()
+float Vesc::getResetAvgIq()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 5))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e2, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
     }
 
     return 0;
 }
 
-float16_t Vesc::getDutyCycleNow()
+float Vesc::getDutyCycleNow()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 6))
     {
-        return VescUtility::utility_get_float16(receive_buffer, 1e3, 2);
+        return VescUtility::utility_get_float16(receive_buffer, 1e3, &ind);
     }
 
     return 0;
 }
 
-float32_t Vesc::getRPM()
+float Vesc::getRPM()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 7))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e0, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e0, &ind);
     }
 
     return 0;
 }
 
-float16_t Vesc::getInputVoltage()
+float Vesc::getInputVoltage()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 8))
     {
-        return VescUtility::utility_get_float16(receive_buffer, 1e1, 2);
+        return VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
     }
 
     return 0;
 }
 
-float32_t Vesc::getAmpHours()
+float Vesc::getAmpHours()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 9))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e4, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
     }
 
     return 0;
 }
 
-float32_t Vesc::getaAmpHoursCharged()
+float Vesc::getaAmpHoursCharged()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 10))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e4, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
     }
 
     return 0;
 }
 
-float32_t Vesc::getWattHours()
+float Vesc::getWattHours()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 11))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e4, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
     }
 
     return 0;
 }
 
-float32_t Vesc::getWattHoursCharged()
+float Vesc::getWattHoursCharged()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 12))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e4, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
     }
 
     return 0;
@@ -303,9 +309,10 @@ float32_t Vesc::getWattHoursCharged()
 int32_t Vesc::getTachometerValue()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 13))
     {
-        return VescUtility::utility_get_int32(receive_buffer, 2);
+        return VescUtility::utility_get_int32(receive_buffer, &ind);
     }
 
     return 0;
@@ -314,15 +321,16 @@ int32_t Vesc::getTachometerValue()
 int32_t Vesc::getTachometerAbsValue()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 14))
     {
-        return VescUtility::utility_get_(receive_buffer, 2);
+        return VescUtility::utility_get_int32(receive_buffer, &ind);
     }
 
     return 0;
 }
 
-unit8_t Vesc::getFault()
+uint8_t Vesc::getFault()
 {
     uint8_t receive_buffer[10];
     if (getRealtimeValuesSelective(receive_buffer, 15))
@@ -333,18 +341,19 @@ unit8_t Vesc::getFault()
     return 0;
 }
 
-float32_t Vesc::getPidPosNow()
+float Vesc::getPidPosNow()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 16))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e6, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e6, &ind);
     }
 
     return 0;
 }
 
-unit8_t Vesc::getControllerId()
+uint8_t Vesc::getControllerId()
 {
     uint8_t receive_buffer[10];
     if (getRealtimeValuesSelective(receive_buffer, 17))
@@ -355,38 +364,40 @@ unit8_t Vesc::getControllerId()
     return 0;
 }
 
-float16_t[] Vesc::getMosfetsTemperature()
+float* Vesc::getMosfetsTemperature()
 {
+    float values[3];
     uint8_t receive_buffer[10];
     if (getRealtimeValuesSelective(receive_buffer, 18))
     {
         int32_t ind = 2;
-        float16_t values[3];
-        values[0] = VescUtility::utility_get_float16(receive_buffer, 1e1, ind++);
-        values[1] = VescUtility::utility_get_float16(receive_buffer, 1e1, ind++);
-        values[2] = VescUtility::utility_get_float16(receive_buffer, 1e1, ind++);
+        values[0] = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
+        values[1] = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
+        values[2] = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
     }
 
-    return [];
+    return values;
 }
 
-float32_t Vesc::getResetAvgVd()
+float Vesc::getResetAvgVd()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 19))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e3, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e3, &ind);
     }
 
     return 0;
 }
 
-float32_t Vesc::getResetAvgVq()
+float Vesc::getResetAvgVq()
 {
     uint8_t receive_buffer[10];
+    int32_t ind = 2;
     if (getRealtimeValuesSelective(receive_buffer, 20))
     {
-        return VescUtility::utility_get_float32(receive_buffer, 1e3, 2);
+        return VescUtility::utility_get_float32(receive_buffer, 1e3, &ind);
     }
 
     return 0;
@@ -397,7 +408,7 @@ bool Vesc::getRealtimeValuesSelective(unsigned char *data, unsigned int index)
     uint8_t send_buffer[2];
     int32_t ind = 0;
     send_buffer[ind++] = COMM_GET_VALUES_SELECTIVE;
-    VescUtility::utility_append_int32(send_buffer,  (int32_t)(((uint32_t)1 << index, &ind);
+    VescUtility::utility_append_int32(send_buffer, ((uint32_t)1 << index), &ind);
     sendPacket(send_buffer, ind);
     delay(1);
     return receivePacket(data) && data[0] == COMM_GET_VALUES_SELECTIVE;
@@ -413,8 +424,9 @@ uint8_t Vesc::receivePacket(unsigned char *data)
     return VescPacket::packet_receive_packet(uartPort, data);
 }
 
-MotorConfiguration Vesc::getMotorConfiguration()
-{
+mc_configuration Vesc::getMotorConfiguration() {
+    mc_configuration conf;
+    uint8_t receive_buffer[600];
     uint8_t send_buffer[2];
     int32_t ind = 0;
     send_buffer[ind++] = COMM_GET_MCCONF;
@@ -422,14 +434,13 @@ MotorConfiguration Vesc::getMotorConfiguration()
     delay(1);
     if (receivePacket(receive_buffer) && receive_buffer[0] == COMM_GET_MCCONF)
     {
-        MotorConfiguration conf;
         int32_t ind = 0;
-
         conf.signature = VescUtility::utility_get_uint32(receive_buffer, &ind);
         conf.pwm_mode = receive_buffer[ind++];
         conf.comm_mode = receive_buffer[ind++];
         conf.motor_type = receive_buffer[ind++];
-        conf.sensor_mode = receive_buffer[ind++] conf.l_current_max = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
+        conf.sensor_mode = receive_buffer[ind++];
+        conf.l_current_max = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.l_current_min = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.l_in_current_max = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.l_in_current_min = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
@@ -443,7 +454,8 @@ MotorConfiguration Vesc::getMotorConfiguration()
         conf.l_max_vin = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.l_battery_cut_start = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.l_battery_cut_end = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
-        conf.l_slow_abs_current = receive_buffer[ind++] conf.l_temp_fet_start = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
+        conf.l_slow_abs_current = receive_buffer[ind++];
+        conf.l_temp_fet_start = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.l_temp_fet_end = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.l_temp_motor_start = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.l_temp_motor_end = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
@@ -474,14 +486,16 @@ MotorConfiguration Vesc::getMotorConfiguration()
         conf.foc_current_ki = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.foc_f_sw = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.foc_dt_us = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
-        conf.foc_encoder_inverted = receive_buffer[ind++] conf.foc_encoder_offset = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
+        conf.foc_encoder_inverted = receive_buffer[ind++];
+        conf.foc_encoder_offset = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.foc_encoder_ratio = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.foc_encoder_sin_gain = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.foc_encoder_cos_gain = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.foc_encoder_sin_offset = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.foc_encoder_cos_offset = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.foc_encoder_sincos_filter_constant = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
-        conf.foc_sensor_mode = receive_buffer[ind++] conf.foc_pll_kp = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
+        conf.foc_sensor_mode = receive_buffer[ind++];
+        conf.foc_pll_kp = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.foc_pll_ki = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.foc_motor_l = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
         conf.foc_motor_r = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
@@ -549,8 +563,7 @@ MotorConfiguration Vesc::getMotorConfiguration()
         conf.si_battery_type = receive_buffer[ind++];
         conf.si_battery_cells = receive_buffer[ind++];
         conf.si_battery_ah = VescUtility::utility_get_float32_auto(receive_buffer, &ind);
-        return conf;
     }
 
-    return NULL;
+     return conf;
 }
