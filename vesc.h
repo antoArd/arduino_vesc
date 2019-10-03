@@ -33,6 +33,7 @@ class Vesc {
         void setHandbrake(float current)
         Version getFirmwareVersion();
         Values getRealtimeValues();
+        MotorConfiguration getMotorConfiguration();
         float16_t getFetTemperature();
         float16_t getMotorTemperature();
         float32_t getAvgMotorCurrent();
