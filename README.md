@@ -10,5 +10,5 @@ Connect Arduino
 
 Set in vesc tool app "ADC / UART" or "UART" and enjoy
 
-## Vesc Command pattern
+## package structure
 ![alt text](https://raw.githubusercontent.com/gianmarcov/arduino_vesc/develop/assets/vesc_tx.png)
