@@ -18,6 +18,7 @@
 
 class VescPacket {
     public:
-        static bool packet_receive_packet(HardwareSerial* port, unsigned char *data);
-        static void packet_send_packet(HardwareSerial* port, unsigned char *data, unsigned int len);
+        static bool receive_packet(HardwareSerial* port, unsigned char *data);
+        static void send_packet(HardwareSerial* port, unsigned char *data, unsigned int len);
+        static unsigned short crc16(unsigned char *buf, unsigned int len);
 };

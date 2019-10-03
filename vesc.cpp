@@ -90,7 +90,7 @@ vesc_version Vesc::getFirmwareVersion()
     int32_t ind = 0;
     send_buffer[ind++] = COMM_FW_VERSION;
     sendPacket(send_buffer, ind);
-    delay(1);
+    
     if (receivePacket(receive_buffer) && receive_buffer[0] == COMM_FW_VERSION)
     {
         version.major = receive_buffer[ind++];
@@ -100,8 +100,7 @@ vesc_version Vesc::getFirmwareVersion()
         int index = index_pointer - receive_buffer + ind;
         memcpy(version.hw_name, receive_buffer + ind, index);
         ind += index;
-
-        memcpy(version.stm32_uid, receive_buffer, 12);
+        memcpy(version.stm32_uid, receive_buffer + ind, 12);
         ind += 12;
 
         version.pairing_done = receive_buffer[ind++];
@@ -118,10 +117,10 @@ vesc_values Vesc::getRealtimeValues()
     int32_t ind = 0;
     send_buffer[ind++] = COMM_GET_VALUES;
     sendPacket(send_buffer, ind);
-    delay(1);
+    
     if (receivePacket(receive_buffer) && receive_buffer[0] == COMM_GET_VALUES)
     {
-        ind = 0;
+        ind = 1;
         values.fet_temp = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
         values.motor_temp = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
         values.avg_motor_current = VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
@@ -153,7 +152,7 @@ vesc_values Vesc::getRealtimeValues()
 float Vesc::getFetTemperature()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 0))
     {
         return VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
@@ -165,7 +164,7 @@ float Vesc::getFetTemperature()
 float Vesc::getMotorTemperature()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 1))
     {
         return VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
@@ -177,7 +176,7 @@ float Vesc::getMotorTemperature()
 float Vesc::getAvgMotorCurrent()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 2))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
@@ -189,7 +188,7 @@ float Vesc::getAvgMotorCurrent()
 float Vesc::getAvgInputCurrent()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 3))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
@@ -201,7 +200,7 @@ float Vesc::getAvgInputCurrent()
 float Vesc::getResetAvgId()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 4))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
@@ -213,7 +212,7 @@ float Vesc::getResetAvgId()
 float Vesc::getResetAvgIq()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 5))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e2, &ind);
@@ -225,7 +224,7 @@ float Vesc::getResetAvgIq()
 float Vesc::getDutyCycleNow()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 1;
     if (getRealtimeValuesSelective(receive_buffer, 6))
     {
         return VescUtility::utility_get_float16(receive_buffer, 1e3, &ind);
@@ -237,7 +236,7 @@ float Vesc::getDutyCycleNow()
 float Vesc::getRPM()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 7))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e0, &ind);
@@ -248,8 +247,8 @@ float Vesc::getRPM()
 
 float Vesc::getInputVoltage()
 {
-    uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    uint8_t receive_buffer[6];
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 8))
     {
         return VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
@@ -261,7 +260,7 @@ float Vesc::getInputVoltage()
 float Vesc::getAmpHours()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 9))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
@@ -273,7 +272,7 @@ float Vesc::getAmpHours()
 float Vesc::getaAmpHoursCharged()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 10))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
@@ -285,7 +284,7 @@ float Vesc::getaAmpHoursCharged()
 float Vesc::getWattHours()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 11))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
@@ -297,7 +296,7 @@ float Vesc::getWattHours()
 float Vesc::getWattHoursCharged()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 12))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e4, &ind);
@@ -309,7 +308,7 @@ float Vesc::getWattHoursCharged()
 int32_t Vesc::getTachometerValue()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 13))
     {
         return VescUtility::utility_get_int32(receive_buffer, &ind);
@@ -321,7 +320,7 @@ int32_t Vesc::getTachometerValue()
 int32_t Vesc::getTachometerAbsValue()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 14))
     {
         return VescUtility::utility_get_int32(receive_buffer, &ind);
@@ -344,7 +343,7 @@ uint8_t Vesc::getFault()
 float Vesc::getPidPosNow()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 16))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e6, &ind);
@@ -370,7 +369,7 @@ float* Vesc::getMosfetsTemperature()
     uint8_t receive_buffer[10];
     if (getRealtimeValuesSelective(receive_buffer, 18))
     {
-        int32_t ind = 2;
+        int32_t ind = 5;
         values[0] = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
         values[1] = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
         values[2] = VescUtility::utility_get_float16(receive_buffer, 1e1, &ind);
@@ -382,7 +381,7 @@ float* Vesc::getMosfetsTemperature()
 float Vesc::getResetAvgVd()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 19))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e3, &ind);
@@ -394,7 +393,7 @@ float Vesc::getResetAvgVd()
 float Vesc::getResetAvgVq()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 2;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 20))
     {
         return VescUtility::utility_get_float32(receive_buffer, 1e3, &ind);
@@ -405,23 +404,23 @@ float Vesc::getResetAvgVq()
 
 bool Vesc::getRealtimeValuesSelective(unsigned char *data, unsigned int index)
 {
-    uint8_t send_buffer[2];
+    uint8_t send_buffer[6];
     int32_t ind = 0;
     send_buffer[ind++] = COMM_GET_VALUES_SELECTIVE;
-    VescUtility::utility_append_int32(send_buffer, ((uint32_t)1 << index), &ind);
+    VescUtility::utility_append_uint32(send_buffer, ((uint32_t)1 << index), &ind);
     sendPacket(send_buffer, ind);
-    delay(1);
+    
     return receivePacket(data) && data[0] == COMM_GET_VALUES_SELECTIVE;
 }
 
 void Vesc::sendPacket(unsigned char *data, unsigned int len)
 {
-    VescPacket::packet_send_packet(uartPort, data, len);
+    VescPacket::send_packet(uartPort, data, len);
 }
 
-uint8_t Vesc::receivePacket(unsigned char *data)
+bool Vesc::receivePacket(unsigned char *data)
 {
-    return VescPacket::packet_receive_packet(uartPort, data);
+    return VescPacket::receive_packet(uartPort, data);
 }
 
 mc_configuration Vesc::getMotorConfiguration() {
@@ -431,7 +430,7 @@ mc_configuration Vesc::getMotorConfiguration() {
     int32_t ind = 0;
     send_buffer[ind++] = COMM_GET_MCCONF;
     sendPacket(send_buffer, ind);
-    delay(1);
+    
     if (receivePacket(receive_buffer) && receive_buffer[0] == COMM_GET_MCCONF)
     {
         int32_t ind = 0;

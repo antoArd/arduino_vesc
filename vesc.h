@@ -63,7 +63,7 @@ class Vesc {
         HardwareSerial* debugPort = NULL;
 
         void sendPacket(unsigned char *data, unsigned int len);
-        uint8_t receivePacket(unsigned char *data);
+        bool receivePacket(unsigned char *data);
         bool getRealtimeValuesSelective(unsigned char *data, unsigned int index);
 };
 

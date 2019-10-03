@@ -104,11 +104,11 @@ uint32_t VescUtility::utility_get_uint32(const uint8_t *buffer, int32_t *index) 
 }
 
 float VescUtility::utility_get_float16(const uint8_t *buffer, float scale, int32_t *index) {
-    return (float)VescUtility::utility_get_int16(buffer, index) / scale;
+    return VescUtility::utility_get_int16(buffer, index) / scale;
 }
 
 float VescUtility::utility_get_float32(const uint8_t *buffer, float scale, int32_t *index) {
-    return (float)VescUtility::utility_get_int32(buffer, index) / scale;
+    return VescUtility::utility_get_int32(buffer, index) / scale;
 }
 
 float VescUtility::utility_get_float32_auto(const uint8_t *buffer, int32_t *index) {
