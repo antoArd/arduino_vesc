@@ -55,7 +55,7 @@
   port->write(tx_buffer, b_ind);
 }
 
-int8_t VescPacket::packet_receive_packet(HardwareSerial* port, unsigned char *data) {
+bool VescPacket::packet_receive_packet(HardwareSerial* port, unsigned char *data) {
   uint8_t rx_buffer[600];
   int b_ind = 0;
   int type = rx_buffer[b_ind++] = port->read();
@@ -75,7 +75,7 @@ int8_t VescPacket::packet_receive_packet(HardwareSerial* port, unsigned char *da
             (rx_buffer[b_ind++] = port->read());
       break;
     default:
-      return -2;
+      return false;
   }
 
   for (int i = 0; i < len ; i++) {
@@ -88,8 +88,8 @@ int8_t VescPacket::packet_receive_packet(HardwareSerial* port, unsigned char *da
   unsigned short packet_end = (rx_buffer[len + 3] = port->read());
   if(crc_calc == crc_rx && packet_end == 3) {
     memcpy(data, rx_buffer+type, len);
-    return 1;
+    return true;
   }
   
-  return -1;
+  return false;
 }

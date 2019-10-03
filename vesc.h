@@ -28,6 +28,34 @@ class Vesc {
         void setDuty(float duty);
         void setCurrent(float current);
         void setBrakeCurrent(float current);
+        void setRPM(int32_t rpm);
+        void setPosition(float position);
+        void setHandbrake(float current)
+        Version getFirmwareVersion();
+        Values getRealtimeValues();
+        float16_t getFetTemperature();
+        float16_t getMotorTemperature();
+        float32_t getAvgMotorCurrent();
+        float32_t getAvgInputCurrent();
+        float32_t getResetAvgId();
+        float32_t getResetAvgIq();
+        float16_t getDutyCycleNow();
+        float32_t getRPM();
+        float16_t getInputVoltage();
+        float32_t getAmpHours();
+        float32_t getaAmpHoursCharged();
+        float32_t getWattHours();
+        float32_t getWattHoursCharged();
+        int32_t getTachometerValue();
+        int32_t getTachometerAbsValue();
+        unit8_t getFault();
+        float32_t getPidPosNow();
+        unit8_t getControllerId();
+        float16_t getMosfet1Temperature();
+        float16_t getMosfet2Temperature();
+        float16_t getMosfet3Temperature();
+        float32_t getResetAvgVd();
+        float32_t getResetAvgVq(); 
 
     private:
 		HardwareSerial* uartPort = NULL;
@@ -35,6 +63,7 @@ class Vesc {
 
         void sendPacket(unsigned char *data, unsigned int len);
         uint8_t receivePacket(unsigned char *data);
+        bool getRealtimeValuesSelective(unsigned char *data, unsigned int index);
 };
 
 #endif

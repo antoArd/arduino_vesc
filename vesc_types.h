@@ -16,6 +16,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+struct Version {
+  major: uint8_t;
+  minor: uint8_t;
+  hw_name: char[20];
+  stm32_uid: uint8_t[12];
+  pairing_done: bool;
+}
+
+struct Values {
+  fet_temp: float16_t;
+  motor_temp: float16_t;
+  avg_motor_current: float32_t;
+  avg_input_current: float32_t;
+  reset_avg_id: float32_t;
+  reset_avg_iq: float32_t;
+  duty_cycle_now: float16_t;
+  rpm: float32_t;
+  input_voltage: float16_t;
+  amp_hours: float32_t;
+  amp_hours_charged: float32_t;
+  watt_hours: float32_t;
+  watt_hours_charged: float32_t;
+  tachometer_value: int32_t;
+  tachometer_abs_value: int32_t;
+  fault: unit8_t;
+  pid_pos_now: float32_t;
+  controller_id: unit8_t;
+  mos1_temp: float16_t;
+  mos2_temp: float16_t;
+  mos3_temp: float16_t;
+  reset_avg_vd: float32_t;
+  reset_avg_vq: float32_t; 
+}
+
 typedef enum {
   COMM_FW_VERSION = 0,
   COMM_JUMP_TO_BOOTLOADER,
