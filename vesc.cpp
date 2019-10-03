@@ -224,7 +224,7 @@ float Vesc::getResetAvgIq()
 float Vesc::getDutyCycleNow()
 {
     uint8_t receive_buffer[10];
-    int32_t ind = 1;
+    int32_t ind = 5;
     if (getRealtimeValuesSelective(receive_buffer, 6))
     {
         return VescUtility::utility_get_float16(receive_buffer, 1e3, &ind);
