@@ -20,16 +20,37 @@
 #include <stdbool.h>
 #include "vesc_utility.h"
 
+/**
+ * @brief append int16 to buffer
+ * 
+ * @param buffer to write
+ * @param number to store
+ * @param index of buffer
+ */
 void VescUtility::utility_append_int16(uint8_t* buffer, int16_t number, int32_t *index) {
   buffer[(*index)++] = number >> 8;
   buffer[(*index)++] = number;
 }
 
+/**
+ * @brief append uint16 to buffer
+ * 
+ * @param buffer to write
+ * @param number to store
+ * @param index of buffer
+ */
 void VescUtility::utility_append_uint16(uint8_t* buffer, uint16_t number, int32_t *index) {
   buffer[(*index)++] = number >> 8;
   buffer[(*index)++] = number;
 }
 
+/**
+ * @brief append int32 to buffer
+ * 
+ * @param buffer to write
+ * @param number to store
+ * @param index of buffer
+ */
 void VescUtility::utility_append_int32(uint8_t* buffer, int32_t number, int32_t *index) {
   buffer[(*index)++] = number >> 24;
   buffer[(*index)++] = number >> 16;
@@ -37,6 +58,13 @@ void VescUtility::utility_append_int32(uint8_t* buffer, int32_t number, int32_t 
   buffer[(*index)++] = number;
 }
 
+/**
+ * @brief append uint32 to buffer
+ * 
+ * @param buffer to write
+ * @param number to store
+ * @param index of buffer
+ */
 void VescUtility::utility_append_uint32(uint8_t* buffer, uint32_t number, int32_t *index) {
   buffer[(*index)++] = number >> 24;
   buffer[(*index)++] = number >> 16;
@@ -44,14 +72,37 @@ void VescUtility::utility_append_uint32(uint8_t* buffer, uint32_t number, int32_
   buffer[(*index)++] = number;
 }
 
+/**
+ * @brief append float16 to buffer
+ * 
+ * @param buffer to write
+ * @param number to store
+ * @param scale to applicate to number
+ * @param index of buffer
+ */
 void VescUtility::utility_append_float16(uint8_t* buffer, float number, float scale, int32_t *index) {
     VescUtility::utility_append_int16(buffer, (int16_t)(number * scale), index);
 }
 
+/**
+ * @brief append float32 to buffer
+ * 
+ * @param buffer to write
+ * @param number to store
+ * @param scale to applicate to number
+ * @param index of buffer
+ */
 void VescUtility::utility_append_float32(uint8_t* buffer, float number, float scale, int32_t *index) {
     VescUtility::utility_append_int32(buffer, (int32_t)(number * scale), index);
 }
 
+/**
+ * @brief append float32 to buffer auto scale
+ * 
+ * @param buffer to write
+ * @param number to store
+ * @param index of buffer
+ */
 void VescUtility::utility_append_float32_auto(uint8_t* buffer, float number, int32_t *index) {
   int e = 0;
   float sig = frexpf(number, &e);
@@ -71,6 +122,13 @@ void VescUtility::utility_append_float32_auto(uint8_t* buffer, float number, int
   VescUtility::utility_append_uint32(buffer, res, index);
 }
 
+/**
+ * @brief get int16 from buffer
+ * 
+ * @param buffer to read
+ * @param index of buffer
+ * @return int16_t 
+ */
 int16_t VescUtility::utility_get_int16(const uint8_t *buffer, int32_t *index) {
   int16_t res = ((uint16_t) buffer[*index]) << 8 |
           ((uint16_t) buffer[*index + 1]);
@@ -78,6 +136,13 @@ int16_t VescUtility::utility_get_int16(const uint8_t *buffer, int32_t *index) {
   return res;
 }
 
+/**
+ * @brief get uint16_t from buffer
+ * 
+ * @param buffer to read
+ * @param index of buffer
+ * @return uint16_t 
+ */
 uint16_t VescUtility::utility_get_uint16(const uint8_t *buffer, int32_t *index) {
   uint16_t res =  ((uint16_t) buffer[*index]) << 8 |
           ((uint16_t) buffer[*index + 1]);
@@ -85,6 +150,13 @@ uint16_t VescUtility::utility_get_uint16(const uint8_t *buffer, int32_t *index) 
   return res;
 }
 
+/**
+ * @brief get int32_t from buffer
+ * 
+ * @param buffer to read
+ * @param index of buffer
+ * @return int32_t 
+ */
 int32_t VescUtility::utility_get_int32(const uint8_t *buffer, int32_t *index) {
   int32_t res = ((uint32_t) buffer[*index]) << 24 |
           ((uint32_t) buffer[*index + 1]) << 16 |
@@ -94,6 +166,13 @@ int32_t VescUtility::utility_get_int32(const uint8_t *buffer, int32_t *index) {
   return res;
 }
 
+/**
+ * @brief get uint32_t from buffer
+ * 
+ * @param buffer to read
+ * @param index of buffer
+ * @return uint32_t 
+ */
 uint32_t VescUtility::utility_get_uint32(const uint8_t *buffer, int32_t *index) {
   uint32_t res =  ((uint32_t) buffer[*index]) << 24 |
           ((uint32_t) buffer[*index + 1]) << 16 |
@@ -103,14 +182,37 @@ uint32_t VescUtility::utility_get_uint32(const uint8_t *buffer, int32_t *index) 
   return res;
 }
 
+/**
+ * @brief get float16 from buffer
+ * 
+ * @param buffer to read
+ * @param to applicate to number
+ * @param index of buffer
+ * @return float 
+ */
 float VescUtility::utility_get_float16(const uint8_t *buffer, float scale, int32_t *index) {
     return VescUtility::utility_get_int16(buffer, index) / scale;
 }
 
+/**
+ * @brief get float32 from buffer
+ * 
+ * @param buffer to read
+ * @param index of buffer
+* @param to applicate to number
+ * @return float 
+ */
 float VescUtility::utility_get_float32(const uint8_t *buffer, float scale, int32_t *index) {
     return VescUtility::utility_get_int32(buffer, index) / scale;
 }
 
+/**
+ * @brief get float32 from buffer auto scale
+ * 
+ * @param buffer to read
+ * @param index of buffer
+ * @return float 
+ */
 float VescUtility::utility_get_float32_auto(const uint8_t *buffer, int32_t *index) {
   uint32_t res = VescUtility::utility_get_uint32(buffer, index);
 

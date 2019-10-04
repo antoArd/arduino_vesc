@@ -18,6 +18,9 @@
  */
 #include <Arduino.h>
 
+/**
+ * @brief utility class to get or append data
+ */
 class VescUtility {
     public:
     static void utility_append_int16(uint8_t* buffer, int16_t number, int32_t *index);

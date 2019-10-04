@@ -22,12 +22,23 @@ Vesc::Vesc(void)
 {
 }
 
+/**
+ * @brief init vesc interface
+ * 
+ * @param uart 
+ * @param debug 
+ */
 void Vesc::init(HardwareSerial *uart, HardwareSerial *debug)
 {
     uartPort = uart;
     debugPort = debug;
 }
 
+/**
+ * @brief set duty cycle range 0.0% - 1.0%
+ * 
+ * @param duty 
+ */
 void Vesc::setDuty(float duty)
 {
     uint8_t send_buffer[5];
@@ -37,6 +48,12 @@ void Vesc::setDuty(float duty)
     sendPacket(send_buffer, ind);
 }
 
+/**
+ * @brief set current 0 - MAX
+ * this value will passed directly to mcpwn / mcfoc / mcbldc and will be not truncated if exeeds max motor current!
+ * 
+ * @param current 
+ */
 void Vesc::setCurrent(float current)
 {
     uint8_t send_buffer[5];
@@ -46,6 +63,12 @@ void Vesc::setCurrent(float current)
     sendPacket(send_buffer, ind);
 }
 
+/**
+ * @brief set current 0 - MAX
+ * this value will passed directly to mcpwn / mcfoc / mcbldc and will be not truncated if exeeds max motor current!
+ * 
+ * @param current 
+ */
 void Vesc::setBrakeCurrent(float current)
 {
     uint8_t send_buffer[5];
@@ -55,6 +78,11 @@ void Vesc::setBrakeCurrent(float current)
     sendPacket(send_buffer, ind);
 }
 
+/**
+ * @brief set rpm to set 0 - MAX
+ * 
+ * @param rpm 
+ */
 void Vesc::setRPM(int32_t rpm)
 {
     uint8_t send_buffer[5];
@@ -64,6 +92,11 @@ void Vesc::setRPM(int32_t rpm)
     sendPacket(send_buffer, ind);
 }
 
+/**
+ * @brief set rpm 0 - MAX
+ * 
+ * @param position 
+ */
 void Vesc::setPosition(float position)
 {
     uint8_t send_buffer[5];
@@ -73,6 +106,11 @@ void Vesc::setPosition(float position)
     sendPacket(send_buffer, ind);
 }
 
+/**
+ * @brief set handbreak 0 - MAX
+ * 
+ * @param current 
+ */
 void Vesc::setHandbrake(float current)
 {
     uint8_t send_buffer[5];
@@ -82,6 +120,11 @@ void Vesc::setHandbrake(float current)
     sendPacket(send_buffer, ind);
 }
 
+/**
+ * @brief get firmware version
+ * 
+ * @return vesc_version 
+ */
 vesc_version Vesc::getFirmwareVersion()
 {
     vesc_version version;
@@ -109,6 +152,11 @@ vesc_version Vesc::getFirmwareVersion()
     return version;
 }
 
+/**
+ * @brief get real time values
+ * 
+ * @return vesc_values 
+ */
 vesc_values Vesc::getRealtimeValues()
 {
     vesc_values values;
@@ -149,6 +197,11 @@ vesc_values Vesc::getRealtimeValues()
     return values;
 }
 
+/**
+ * @brief get MosFet temperature
+ * 
+ * @return float temperature
+ */
 float Vesc::getFetTemperature()
 {
     uint8_t receive_buffer[10];
@@ -161,6 +214,11 @@ float Vesc::getFetTemperature()
     return 0;
 }
 
+/**
+ * @brief get motor temperature
+ * 
+ * @return float  temperature
+ */
 float Vesc::getMotorTemperature()
 {
     uint8_t receive_buffer[10];
@@ -173,6 +231,11 @@ float Vesc::getMotorTemperature()
     return 0;
 }
 
+/**
+ * @brief get average motor current
+ * 
+ * @return float average motor current
+ */
 float Vesc::getAvgMotorCurrent()
 {
     uint8_t receive_buffer[10];
@@ -185,6 +248,11 @@ float Vesc::getAvgMotorCurrent()
     return 0;
 }
 
+/**
+ * @brief get average input current
+ * 
+ * @return float average input current
+ */
 float Vesc::getAvgInputCurrent()
 {
     uint8_t receive_buffer[10];
@@ -197,6 +265,11 @@ float Vesc::getAvgInputCurrent()
     return 0;
 }
 
+/**
+ * @brief get reset average id
+ * 
+ * @return float reset average id
+ */
 float Vesc::getResetAvgId()
 {
     uint8_t receive_buffer[10];
@@ -209,6 +282,11 @@ float Vesc::getResetAvgId()
     return 0;
 }
 
+/**
+ * @brief get reset average iq
+ * 
+ * @return float reset average iq
+ */
 float Vesc::getResetAvgIq()
 {
     uint8_t receive_buffer[10];
@@ -221,6 +299,11 @@ float Vesc::getResetAvgIq()
     return 0;
 }
 
+/**
+ * @brief get duty cycle now
+ * 
+ * @return float duty cycle now
+ */
 float Vesc::getDutyCycleNow()
 {
     uint8_t receive_buffer[10];
@@ -233,6 +316,11 @@ float Vesc::getDutyCycleNow()
     return 0;
 }
 
+/**
+ * @brief get rpm
+ * 
+ * @return float rpm
+ */
 float Vesc::getRPM()
 {
     uint8_t receive_buffer[10];
@@ -245,6 +333,11 @@ float Vesc::getRPM()
     return 0;
 }
 
+/**
+ * @brief get input voltage
+ * 
+ * @return float input voltage
+ */
 float Vesc::getInputVoltage()
 {
     uint8_t receive_buffer[6];
@@ -257,6 +350,12 @@ float Vesc::getInputVoltage()
     return 0;
 }
 
+
+/**
+ * @brief get amp hours
+ * 
+ * @return float amp hours
+ */
 float Vesc::getAmpHours()
 {
     uint8_t receive_buffer[10];
@@ -269,6 +368,11 @@ float Vesc::getAmpHours()
     return 0;
 }
 
+/**
+ * @brief get amp hours charged
+ * 
+ * @return float amp hours charged
+ */
 float Vesc::getaAmpHoursCharged()
 {
     uint8_t receive_buffer[10];
@@ -281,6 +385,11 @@ float Vesc::getaAmpHoursCharged()
     return 0;
 }
 
+/**
+ * @brief get watt hours
+ * 
+ * @return float watt hours
+ */
 float Vesc::getWattHours()
 {
     uint8_t receive_buffer[10];
@@ -293,6 +402,11 @@ float Vesc::getWattHours()
     return 0;
 }
 
+/**
+ * @brief get watt hours charged
+ * 
+ * @return float watt hours charged
+ */
 float Vesc::getWattHoursCharged()
 {
     uint8_t receive_buffer[10];
@@ -305,6 +419,11 @@ float Vesc::getWattHoursCharged()
     return 0;
 }
 
+/**
+ * @brief get tachometer value
+ * 
+ * @return int32_t tachometer value
+ */
 int32_t Vesc::getTachometerValue()
 {
     uint8_t receive_buffer[10];
@@ -317,6 +436,11 @@ int32_t Vesc::getTachometerValue()
     return 0;
 }
 
+/**
+ * @brief get tachometer abs value
+ * 
+ * @return int32_t tachometer abs value
+ */
 int32_t Vesc::getTachometerAbsValue()
 {
     uint8_t receive_buffer[10];
@@ -329,6 +453,11 @@ int32_t Vesc::getTachometerAbsValue()
     return 0;
 }
 
+/**
+ * @brief get fault
+ * 
+ * @return uint8_t get fault
+ */
 uint8_t Vesc::getFault()
 {
     uint8_t receive_buffer[10];
@@ -340,6 +469,11 @@ uint8_t Vesc::getFault()
     return 0;
 }
 
+/**
+ * @brief get pid pos now
+ * 
+ * @return float pid pos now
+ */
 float Vesc::getPidPosNow()
 {
     uint8_t receive_buffer[10];
@@ -352,6 +486,11 @@ float Vesc::getPidPosNow()
     return 0;
 }
 
+/**
+ * @brief get controller id
+ * 
+ * @return uint8_t controller id
+ */
 uint8_t Vesc::getControllerId()
 {
     uint8_t receive_buffer[10];
@@ -363,6 +502,11 @@ uint8_t Vesc::getControllerId()
     return 0;
 }
 
+/**
+ * @brief get mosfets temperature
+ * 
+ * @return float* temperature of the tree mosfets
+ */
 float* Vesc::getMosfetsTemperature()
 {
     float values[3];
@@ -378,6 +522,11 @@ float* Vesc::getMosfetsTemperature()
     return values;
 }
 
+/**
+ * @brief get reset average vd
+ * 
+ * @return float reset average vd
+ */
 float Vesc::getResetAvgVd()
 {
     uint8_t receive_buffer[10];
@@ -390,6 +539,11 @@ float Vesc::getResetAvgVd()
     return 0;
 }
 
+/**
+ * @brief get reset average vq
+ * 
+ * @return float reset average vq
+ */
 float Vesc::getResetAvgVq()
 {
     uint8_t receive_buffer[10];
@@ -402,6 +556,11 @@ float Vesc::getResetAvgVq()
     return 0;
 }
 
+/**
+ * @brief helper method to retrieve single values from vesc
+ * 
+ * @return bool
+ */
 bool Vesc::getRealtimeValuesSelective(unsigned char *data, unsigned int index)
 {
     uint8_t send_buffer[6];
@@ -413,16 +572,34 @@ bool Vesc::getRealtimeValuesSelective(unsigned char *data, unsigned int index)
     return receivePacket(data) && data[0] == COMM_GET_VALUES_SELECTIVE;
 }
 
+/**
+ * @brief helper method to send packet
+ * 
+ * @param data to send
+ * @param len of byte array
+ */
 void Vesc::sendPacket(unsigned char *data, unsigned int len)
 {
     VescPacket::send_packet(uartPort, data, len);
 }
 
+/**
+ * @brief helper method to receive packet
+ * 
+ * @param data store received byte array
+ * @return true if reading was sucessfull
+ * @return false if reading gone wrong
+ */
 bool Vesc::receivePacket(unsigned char *data)
 {
     return VescPacket::receive_packet(uartPort, data);
 }
 
+/**
+ * @brief get motor configuration
+ * 
+ * @return mc_configuration 
+ */
 mc_configuration Vesc::getMotorConfiguration() {
     mc_configuration conf;
     uint8_t receive_buffer[600];

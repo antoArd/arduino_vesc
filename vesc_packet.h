@@ -16,6 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @brief class to receive and send packet
+ */
 class VescPacket {
     public:
         static bool receive_packet(HardwareSerial* port, unsigned char *data);

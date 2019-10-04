@@ -20,6 +20,13 @@
 #include <HardwareSerial.h>
 #include "vesc_packet.h"
 
+/**
+ * @brief send packet to vesc
+ * 
+ * @param port to write byte array
+ * @param data to send
+ * @param len of byte array
+ */
 void VescPacket::send_packet(HardwareSerial *port, unsigned char *data, unsigned int len)
 {
   uint8_t tx_buffer[600];
@@ -62,6 +69,14 @@ void VescPacket::send_packet(HardwareSerial *port, unsigned char *data, unsigned
   port->flush();
 }
 
+/**
+ * @brief receive packet from vesc
+ * 
+ * @param port to read byte array
+ * @param data store received byte array
+ * @return true if reading was sucessfull
+ * @return false if reading gone wrong
+ */
 bool VescPacket::receive_packet(HardwareSerial *port, unsigned char *data)
 {
 
@@ -110,6 +125,9 @@ bool VescPacket::receive_packet(HardwareSerial *port, unsigned char *data)
   return false;
 }
 
+/**
+ * @brief table of crc16
+ */
 const unsigned short crc16_tab[] = {0x0000, 0x1021, 0x2042, 0x3063, 0x4084,
                                     0x50a5, 0x60c6, 0x70e7, 0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad,
                                     0xe1ce, 0xf1ef, 0x1231, 0x0210, 0x3273, 0x2252, 0x52b5, 0x4294, 0x72f7,
@@ -140,6 +158,13 @@ const unsigned short crc16_tab[] = {0x0000, 0x1021, 0x2042, 0x3063, 0x4084,
                                     0x0cc1, 0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8,
                                     0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0};
 
+/**
+ * @brief generate crc16
+ * 
+ * @param buf byte array
+ * @param len to draw checksum
+ * @return unsigned short crc16 checksum
+ */
 unsigned short VescPacket::crc16(unsigned char *buf, unsigned int len)
 {
   unsigned int i;

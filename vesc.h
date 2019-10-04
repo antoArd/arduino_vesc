@@ -22,6 +22,9 @@
 #include "vesc_types.h"
 #include "vesc_packet.h"
 
+/**
+ * @brief vesc interface
+ */
 class Vesc {
 
     public:
