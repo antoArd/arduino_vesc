@@ -186,7 +186,7 @@ uint32_t VescUtility::utility_get_uint32(const uint8_t *buffer, int32_t *index) 
  * @brief get float16 from buffer
  * 
  * @param buffer to read
- * @param to applicate to number
+ * @param scale to applicate to number
  * @param index of buffer
  * @return float 
  */
@@ -198,8 +198,8 @@ float VescUtility::utility_get_float16(const uint8_t *buffer, float scale, int32
  * @brief get float32 from buffer
  * 
  * @param buffer to read
+ * @param scale to applicate to number
  * @param index of buffer
-* @param to applicate to number
  * @return float 
  */
 float VescUtility::utility_get_float32(const uint8_t *buffer, float scale, int32_t *index) {
