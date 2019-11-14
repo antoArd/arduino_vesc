@@ -17,46 +17,46 @@
  */
 
 typedef struct {
-  major: uint8_t;
-  minor: uint8_t;
-  hw_name: char[20];
-  stm32_uid: uint8_t[12];
-  pairing_done: bool;
-} Version;
+  uint8_t major;
+  uint8_t minor;
+  char hw_name[20];
+  uint8_t stm32_uid[12];
+  bool pairing_done;
+} vesc_version;
 
 typedef struct {
-  fet_temp: float16_t;
-  motor_temp: float16_t;
-  avg_motor_current: float32_t;
-  avg_input_current: float32_t;
-  reset_avg_id: float32_t;
-  reset_avg_iq: float32_t;
-  duty_cycle_now: float16_t;
-  rpm: float32_t;
-  input_voltage: float16_t;
-  amp_hours: float32_t;
-  amp_hours_charged: float32_t;
-  watt_hours: float32_t;
-  watt_hours_charged: float32_t;
-  tachometer_value: int32_t;
-  tachometer_abs_value: int32_t;
-  fault: unit8_t;
-  pid_pos_now: float32_t;
-  controller_id: unit8_t;
-  mos1_temp: float16_t;
-  mos2_temp: float16_t;
-  mos3_temp: float16_t;
-  reset_avg_vd: float32_t;
-  reset_avg_vq: float32_t; 
-} Values;
+  float fet_temp ;
+  float motor_temp;
+  float avg_motor_current;
+  float avg_input_current;
+  float reset_avg_id;
+  float reset_avg_iq;
+  float duty_cycle_now;
+  float rpm;
+  float input_voltage;
+  float amp_hours;
+  float amp_hours_charged;
+  float watt_hours;
+  float watt_hours_charged;
+  int32_t tachometer_value;
+  int32_t tachometer_abs_value;
+  float fault;
+  float pid_pos_now;
+  uint8_t controller_id;
+  float mos1_temp;
+  float mos2_temp;
+  float mos3_temp;
+  float reset_avg_vd;
+  float reset_avg_vq; 
+} vesc_values;
 
 typedef struct {
-  unit32_t signature;
+  	uint32_t signature;
 	// Switching and drive
-	mc_pwm_mode pwm_mode;
-	mc_comm_mode comm_mode;
-	mc_motor_type motor_type;
-	mc_sensor_mode sensor_mode;
+	uint8_t pwm_mode;
+	uint8_t comm_mode;
+	uint8_t motor_type;
+	uint8_t sensor_mode;
 	// Limits
 	float l_current_max;
 	float l_current_min;
@@ -129,7 +129,7 @@ typedef struct {
 	float foc_sl_openloop_time;
 	float foc_sl_d_current_duty;
 	float foc_sl_d_current_factor;
-	mc_foc_sensor_mode foc_sensor_mode;
+	uint8_t foc_sensor_mode;
 	uint8_t foc_hall_table[8];
 	float foc_sl_erpm;
 	bool foc_sample_v0_v7;
@@ -167,23 +167,23 @@ typedef struct {
 	float m_duty_ramp_step;
 	float m_current_backoff_gain;
 	uint32_t m_encoder_counts;
-	sensor_port_mode m_sensor_port_mode;
+	uint8_t m_sensor_port_mode;
 	bool m_invert_direction;
-	drv8301_oc_mode m_drv8301_oc_mode;
+	uint8_t m_drv8301_oc_mode;
 	int m_drv8301_oc_adj;
 	float m_bldc_f_sw_min;
 	float m_bldc_f_sw_max;
 	float m_dc_f_sw;
 	float m_ntc_motor_beta;
-	out_aux_mode m_out_aux_mode;
+	uint8_t m_out_aux_mode;
 	// Setup info
 	uint8_t si_motor_poles;
 	float si_gear_ratio;
 	float si_wheel_diameter;
-	BATTERY_TYPE si_battery_type;
+	uint8_t si_battery_type;
 	int si_battery_cells;
 	float si_battery_ah;
-} MotorConfiguration;
+} mc_configuration;
 
 typedef enum {
   COMM_FW_VERSION = 0,
